@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="index.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <script src="./three.min.js"></script>
+    <script src="./OrbitControls.js"></script>
+    <script src="./GLTFLoader.js"></script>
+    <script src="./postprocessing.min.js"></script>
+    <script src="./fxaashader.js"></script>
+    <script src="dat-gui.min.js"></script>
+    <script src="./src/lib/EffectComposer.js"></script>
+    <script src="./src/lib/RenderPass.js"></script>
+    <script src="./src/lib/ShaderPass.js"></script>
+    <script type="x-vertex/x-shader" id="vertexShader">
+        varying vec3 pos;
+        varying vec2 vUv;
+        uniform float progress;
+        void main(){
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix*vec4(position,1.0);
+        }
+    </script>
+    <script type="x-fragment/x-shader" id="fragmentShader">
+        varying vec2 vUv;    
+        uniform sampler2D texture1;
+        uniform sampler2D texture2;
+        uniform float progress;
+        uniform float time;
+        void main(){
+        
+            vec2 displaceUv = vec2(vUv.y,vUv.x);
+            vec4 displaceimg = texture2D(texture2,displaceUv);
+            vec2 newUv = vec2(vUv.x,vUv.y );
+            //float prog = sin(progress*20.0+time*0.5);
+            //float newprog = clamp(prog,0.0,1.0);
+            newUv.y = mix(vUv.y,displaceimg.r-0.1,progress);
+            vec4 image = texture2D(texture1,newUv);    
+            
+            gl_FragColor = image ;
+          }
+    </script>
+    <div id="container">
+      <div id="arrowr" class="arrow">
+        <i class="fa fa-arrow-right"></i>
+      </div>
+      <div id="arrowl" class="arrow">
+        <i class="fa fa-arrow-left"></i>
+      </div>
+    </div>
+    <script src="./main.js"></script>
+
+</body>
+</html>
